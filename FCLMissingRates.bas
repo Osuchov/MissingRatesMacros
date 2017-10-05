@@ -65,29 +65,27 @@ Public Sub fillData()
 Dim i As Long
 Dim startRow As Long
 Dim finishRow As Long
+
 startRow = firstFree(MissingRates, 46).Row
 finishRow = firstFree(MissingRates, 1).Row - 1
-'column 46 - week no ; date ; test ; status ; date ; solved ; Comment ; Action taken ; Rootcause ; now with ; leadtime ; status2 leadtime range  last action add Missing rate
 
-If Application.International(xlCountrySetting) = 48 Then
-    For i = startRow To finishRow
+For i = startRow To finishRow
+    If Application.International(xlCountrySetting) = 48 Then
         Cells(i, 45).Value = Format(Date, "yyyy-ww", vbMonday, vbFirstJan1)
         Cells(i, 46).Value = Format(Date, "yyyy-mm-dd", vbMonday, vbFirstJan1)
         Cells(i, 47).FormulaLocal = "=IFERROR(VLOOKUP(A" & i & ";'Latest Report'!A:A;1;0);0)"
         Cells(i, 48).FormulaLocal = "=IF(AU" & i & "=0; " & Chr(34) & "SOLVED" & Chr(34) & ";" & Chr(34) & "PENDING" & Chr(34) & ")"
         Cells(i, 54).FormulaLocal = "=(IF(AW" & i & ">0;NETWORKDAYS(AT" & i & ";AW" & i & ");NETWORKDAYS(AT" & i & ";TODAY())))-1"
         Cells(i, 55).FormulaLocal = "=IF(BB" & i & "<1;" & Chr(34) & "new" & Chr(34) & ";IF(AND(BB" & i & ">=1; BB" & i & "<6);" & Chr(34) & "pending" & Chr(34) & ";IF(BC" & i & ">=6; " & Chr(34) & "overdue" & Chr(34) & ")))"
-    Next i
-Else
-    For i = startRow To finishRow
+    Else
         Cells(i, 45).Value = Format(Date, "yyyy-ww", vbMonday, vbFirstJan1)
         Cells(i, 46).Value = Format(Date, "yyyy-mm-dd", vbMonday, vbFirstJan1)
         Cells(i, 47).FormulaLocal = "=IFERROR(VLOOKUP(A" & i & ",'Latest Report'!A:A,1,0),0)"
         Cells(i, 48).FormulaLocal = "=IF(AU" & i & "=0, " & Chr(34) & "SOLVED" & Chr(34) & "," & Chr(34) & "PENDING" & Chr(34) & ")"
         Cells(i, 54).FormulaLocal = "=(IF(AW" & i & ">0,NETWORKDAYS(AT" & i & ",AW" & i & "),NETWORKDAYS(AT" & i & ",TODAY())))-1"
         Cells(i, 55).FormulaLocal = "=IF(BB" & i & "<1," & Chr(34) & "new" & Chr(34) & ",IF(AND(BB" & i & ">=1, BB" & i & "<6)," & Chr(34) & "pending" & Chr(34) & ",IF(BB" & i & ">=6, " & Chr(34) & "overdue" & Chr(34) & ")))"
-    Next i
-End If
+    End If
+Next i
 
 
 End Sub
