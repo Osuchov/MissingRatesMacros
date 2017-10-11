@@ -44,7 +44,7 @@ mr.Range("A1").CurrentRegion.RemoveDuplicates Columns:=1, Header:=xlYes
 Call fillData
 Call fillFormats
 
-MsgBox ("Added " & (firstFree(mr, 1).Row) - target.Row & " new lines.")
+MsgBox ("Added " & (firstFree(mr, 1).row) - target.row & " new lines.")
 
 Application.ScreenUpdating = True
 
@@ -66,8 +66,8 @@ Dim i As Long
 Dim startRow As Long
 Dim finishRow As Long
 
-startRow = firstFree(MissingRates, 46).Row
-finishRow = firstFree(MissingRates, 1).Row - 1
+startRow = firstFree(MissingRates, 46).row
+finishRow = firstFree(MissingRates, 1).row - 1
 
 For i = startRow To finishRow
     If Application.International(xlCountrySetting) = 48 Then
@@ -92,7 +92,7 @@ End Sub
 
 Public Sub fillFormats()
 Dim laRow As Long
-laRow = firstFree(MissingRates, 1).Row - 1
+laRow = firstFree(MissingRates, 1).row - 1
 MissingRates.Range(Cells(1, 1), Cells(laRow, 59)).Select
 
 With Selection.Borders(xlEdgeLeft)
@@ -122,6 +122,56 @@ With Selection.Borders(xlEdgeLeft)
 
 MissingRates.Range("J1:J" & laRow & ", K1:K" & laRow & ", Z1:Z" & laRow & ", AV1:AW" & laRow & "").Select
 Selection.Interior.ColorIndex = 15
+
+End Sub
+
+Sub RefreshShipments()
+
+Dim lr As Worksheet, mr As Worksheet
+Dim numRows As Long
+Dim rowsToRefresh As Long
+Dim rangeToRefresh As Range
+Dim rowCounter As Long
+Dim row As Range
+Dim shipment As String
+Dim search As Single
+Dim lookWhere As Range, foundWhere As Range
+Dim target As Range
+
+Set lr = LatestReport
+Set mr = MissingRates
+Set lookWhere = lr.UsedRange.Columns(1)
+
+
+Application.ScreenUpdating = False
+
+numRows = Selection.row
+rowsToRefresh = Selection.Rows.Count
+rowCounter = 0
+
+Set rangeToRefresh = Rows(numRows & ":" & rowsToRefresh + numRows - 1).SpecialCells(xlCellTypeVisible)
+
+For Each row In rangeToRefresh
+    mr.Activate
+    rowCounter = rowCounter + 1
+    Application.StatusBar = "Refreshing row: " & rowCounter & " out of " & rowsToRefresh
+    
+    shipment = rangeToRefresh.Range("A" & rowCounter).Value
+    
+    Set foundWhere = lookWhere.Find(what:=shipment, LookIn:=xlValues, LookAt:=xlWhole, SearchOrder:=xlByRows, SearchDirection:=xlNext, _
+                MatchCase:=False, SearchFormat:=False)
+        
+    If Not foundWhere Is Nothing Then 'if found
+        lr.Activate
+        lr.Range(Cells(foundWhere.row, 1), Cells(foundWhere.row, 44)).Copy
+        rangeToRefresh.Range("A" & rowCounter).PasteSpecial Paste:=xlPasteValues
+    End If
+
+Next row
+
+mr.Activate
+Application.ScreenUpdating = True
+Application.StatusBar = False
 
 End Sub
 
