@@ -131,20 +131,17 @@ End Sub
 
 Sub RefreshShipments()
 
-Dim lr As Worksheet, mr As Worksheet
 Dim numRows As Long
 Dim rowsToRefresh As Long
 Dim rangeToRefresh As Range
 Dim rowCounter As Long
-Dim row As Range
+Dim cell As Range
 Dim shipment As String
 Dim search As Single
 Dim lookWhere As Range, foundWhere As Range
 Dim target As Range
 
-Set lr = LatestReport
-Set mr = MissingRates
-Set lookWhere = lr.UsedRange.Columns(1)
+Set lookWhere = Sheets("Latest Report").UsedRange.Columns(1)
 
 Application.ScreenUpdating = False
 
@@ -152,32 +149,29 @@ numRows = Selection.row
 rowsToRefresh = Selection.Rows.Count
 rowCounter = 0
 
-'Set rangeToRefresh = Rows(numRows & ":" & rowsToRefresh + numRows - 1).SpecialCells(xlCellTypeVisible)
-Set rangeToRefresh = Range(Cells(numRows, 1), Cells(numRows + rowsToRefresh - 1, 44)).SpecialCells(xlCellTypeVisible)
+If ActiveSheet.FilterMode Then
+    Set rangeToRefresh = Range(Cells(numRows, 1), Cells(numRows + rowsToRefresh - 1, 1)).SpecialCells(xlCellTypeVisible)
+Else
+    Set rangeToRefresh = Range(Cells(numRows, 1), Cells(numRows + rowsToRefresh - 1, 1))
+End If
 
-For Each row In rangeToRefresh
-    mr.Activate
+For Each cell In rangeToRefresh
     rowCounter = rowCounter + 1
-    Application.StatusBar = "Refreshing row: " & rowCounter & " out of " & rowsToRefresh
+    Application.StatusBar = "Checking row: " & rowCounter & " out of " & rowsToRefresh
     
-    shipment = rangeToRefresh.Range("A" & rowCounter).Value
+    shipment = cell.Value
     
     Set foundWhere = lookWhere.Find(what:=shipment, LookIn:=xlValues, LookAt:=xlWhole, SearchOrder:=xlByRows, SearchDirection:=xlNext, _
                 MatchCase:=False, SearchFormat:=False)
-        
+    
     If Not foundWhere Is Nothing Then 'if found
-        lr.Activate
-        lr.Range(Cells(foundWhere.row, 1), Cells(foundWhere.row, 44)).Copy
-        rangeToRefresh.Range("A" & rowCounter).PasteSpecial Paste:=xlPasteValues
+        LatestReport.Activate
+        Range(Cells(foundWhere.row, 1), Cells(foundWhere.row, 44)).Copy
+        MissingRates.Activate
+        cell.PasteSpecial Paste:=xlPasteValues
     End If
-    
-    If rowCounter >= rowsToRefresh Then
-        Exit For
-    End If
-    
-Next row
+Next cell
 
-mr.Activate
 Application.ScreenUpdating = True
 Application.StatusBar = False
 
