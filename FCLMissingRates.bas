@@ -146,14 +146,14 @@ Set lr = LatestReport
 Set mr = MissingRates
 Set lookWhere = lr.UsedRange.Columns(1)
 
-
 Application.ScreenUpdating = False
 
 numRows = Selection.row
 rowsToRefresh = Selection.Rows.Count
 rowCounter = 0
 
-Set rangeToRefresh = Rows(numRows & ":" & rowsToRefresh + numRows - 1).SpecialCells(xlCellTypeVisible)
+'Set rangeToRefresh = Rows(numRows & ":" & rowsToRefresh + numRows - 1).SpecialCells(xlCellTypeVisible)
+Set rangeToRefresh = Range(Cells(numRows, 1), Cells(numRows + rowsToRefresh - 1, 44)).SpecialCells(xlCellTypeVisible)
 
 For Each row In rangeToRefresh
     mr.Activate
@@ -170,7 +170,11 @@ For Each row In rangeToRefresh
         lr.Range(Cells(foundWhere.row, 1), Cells(foundWhere.row, 44)).Copy
         rangeToRefresh.Range("A" & rowCounter).PasteSpecial Paste:=xlPasteValues
     End If
-
+    
+    If rowCounter >= rowsToRefresh Then
+        Exit For
+    End If
+    
 Next row
 
 mr.Activate
