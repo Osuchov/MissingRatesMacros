@@ -66,6 +66,8 @@ Dim i As Long
 Dim startRow As Long
 Dim finishRow As Long
 
+MissingRates.Activate
+
 startRow = firstFree(MissingRates, 46).row
 finishRow = firstFree(MissingRates, 1).row - 1
 
@@ -92,7 +94,9 @@ End Sub
 
 Public Sub fillFormats()
 Dim laRow As Long
+
 laRow = firstFree(MissingRates, 1).row - 1
+
 MissingRates.Range(Cells(1, 1), Cells(laRow, 59)).Select
 
 With Selection.Borders(xlEdgeLeft)
