@@ -44,9 +44,10 @@ mr.Range("A1").CurrentRegion.RemoveDuplicates Columns:=1, Header:=xlYes
 Call fillData
 Call fillFormats
 
-MsgBox ("Added " & (firstFree(mr, 1).row) - target.row & " new lines.")
-
 Application.ScreenUpdating = True
+
+mr.Activate
+MsgBox ("Added " & (firstFree(mr, 1).row) - target.row & " new lines.")
 
 End Sub
 
