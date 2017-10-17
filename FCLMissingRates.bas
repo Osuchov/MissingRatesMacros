@@ -141,6 +141,7 @@ Dim shipment As String
 Dim search As Single
 Dim lookWhere As Range, foundWhere As Range
 Dim target As Range
+Dim foundCounter As Long
 
 Set lookWhere = Sheets("Latest Report").UsedRange.Columns(1)
 
@@ -156,6 +157,8 @@ Else
     Set rangeToRefresh = Range(Cells(numRows, 1), Cells(numRows + rowsToRefresh - 1, 1))
 End If
 
+foundCounter = 0
+
 For Each cell In rangeToRefresh
     rowCounter = rowCounter + 1
     Application.StatusBar = "Checking row: " & rowCounter & " out of " & rowsToRefresh
@@ -166,6 +169,7 @@ For Each cell In rangeToRefresh
                 MatchCase:=False, SearchFormat:=False)
     
     If Not foundWhere Is Nothing Then 'if found
+        foundCounter = foundCounter + 1
         LatestReport.Activate
         Range(Cells(foundWhere.row, 1), Cells(foundWhere.row, 44)).Copy
         MissingRates.Activate
@@ -175,6 +179,8 @@ Next cell
 
 Application.ScreenUpdating = True
 Application.StatusBar = False
+
+MsgBox "Refreshed " & foundCounter & " out of " & rowsToRefresh & "."
 
 End Sub
 
