@@ -134,6 +134,7 @@ Sub RefreshShipments()
 
 Dim numRows As Long
 Dim rowsToRefresh As Long
+Dim visibleRowsToRefresh As Long
 Dim rangeToRefresh As Range
 Dim rowCounter As Long
 Dim cell As Range
@@ -142,6 +143,7 @@ Dim search As Single
 Dim lookWhere As Range, foundWhere As Range
 Dim target As Range
 Dim foundCounter As Long
+Dim visible As Integer
 
 Set lookWhere = Sheets("Latest Report").UsedRange.Columns(1)
 
@@ -149,12 +151,15 @@ Application.ScreenUpdating = False
 
 numRows = Selection.row
 rowsToRefresh = Selection.Rows.Count
+visibleRowsToRefresh = Selection.Rows.SpecialCells(xlCellTypeVisible).Count
 rowCounter = 0
 
 If ActiveSheet.FilterMode Then
     Set rangeToRefresh = Range(Cells(numRows, 1), Cells(numRows + rowsToRefresh - 1, 1)).SpecialCells(xlCellTypeVisible)
+    visible = 1
 Else
     Set rangeToRefresh = Range(Cells(numRows, 1), Cells(numRows + rowsToRefresh - 1, 1))
+    visible = 0
 End If
 
 foundCounter = 0
@@ -180,7 +185,11 @@ Next cell
 Application.ScreenUpdating = True
 Application.StatusBar = False
 
-MsgBox "Refreshed " & foundCounter & " out of " & rowsToRefresh & "."
+If visible = 0 Then
+    MsgBox "Refreshed " & foundCounter & " out of " & rowsToRefresh & "."
+Else
+    MsgBox "Refreshed " & foundCounter & " out of " & visibleRowsToRefresh & "."
+End If
 
 End Sub
 
