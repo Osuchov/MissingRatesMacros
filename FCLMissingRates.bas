@@ -152,15 +152,26 @@ Application.ScreenUpdating = False
 numRows = Selection.Row
 rowsToRefresh = Selection.Rows.Count
 
-Set rangeToRefresh = Range(Cells(numRows, 1), Cells(numRows + rowsToRefresh - 1, 1)).SpecialCells(xlCellTypeVisible)
-
 visible = 0
 rowCounter = 0
 foundCounter = 0
 
-If ActiveSheet.FilterMode Then  'if autofilter used
-    visibleRowsToRefresh = rangeToRefresh.SpecialCells(xlCellTypeVisible).Cells.Count
-    visible = 1
+If rowsToRefresh = 1 Then
+    Set rangeToRefresh = Range(Cells(numRows, 1), Cells(numRows + rowsToRefresh - 1, 1))
+    
+    If ActiveSheet.FilterMode Then  'if filter is on
+        visibleRowsToRefresh = rangeToRefresh.Rows.Count
+        visible = 1
+    Else
+        visibleRowsToRefresh = rangeToRefresh.Cells.Count
+    End If
+Else
+    Set rangeToRefresh = Range(Cells(numRows, 1), Cells(numRows + rowsToRefresh - 1, 1)).SpecialCells(xlCellTypeVisible)
+    
+    If ActiveSheet.FilterMode Then  'if filter is on
+        visibleRowsToRefresh = rangeToRefresh.Cells.Count
+        visible = 1
+    End If
 End If
 
 For Each cell In rangeToRefresh
