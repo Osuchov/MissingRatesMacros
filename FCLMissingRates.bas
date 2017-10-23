@@ -47,7 +47,7 @@ Call fillFormats
 Application.ScreenUpdating = True
 
 mr.Activate
-MsgBox ("Added " & (firstFree(mr, 1).row) - target.row & " new lines.")
+MsgBox ("Added " & (firstFree(mr, 1).Row) - target.Row & " new lines.")
 
 End Sub
 
@@ -69,8 +69,8 @@ Dim finishRow As Long
 
 MissingRates.Activate
 
-startRow = firstFree(MissingRates, 46).row
-finishRow = firstFree(MissingRates, 1).row - 1
+startRow = firstFree(MissingRates, 46).Row
+finishRow = firstFree(MissingRates, 1).Row - 1
 
 For i = startRow To finishRow
     If Application.International(xlCountrySetting) = 48 Then
@@ -96,7 +96,7 @@ End Sub
 Public Sub fillFormats()
 Dim laRow As Long
 
-laRow = firstFree(MissingRates, 1).row - 1
+laRow = firstFree(MissingRates, 1).Row - 1
 
 MissingRates.Range(Cells(1, 1), Cells(laRow, 59)).Select
 
@@ -149,20 +149,19 @@ Set lookWhere = Sheets("Latest Report").UsedRange.Columns(1)
 
 Application.ScreenUpdating = False
 
-numRows = Selection.row
+numRows = Selection.Row
 rowsToRefresh = Selection.Rows.Count
-visibleRowsToRefresh = Selection.Rows.SpecialCells(xlCellTypeVisible).Count
+
+Set rangeToRefresh = Range(Cells(numRows, 1), Cells(numRows + rowsToRefresh - 1, 1)).SpecialCells(xlCellTypeVisible)
+
+visible = 0
 rowCounter = 0
-
-If ActiveSheet.FilterMode Then
-    Set rangeToRefresh = Range(Cells(numRows, 1), Cells(numRows + rowsToRefresh - 1, 1)).SpecialCells(xlCellTypeVisible)
-    visible = 1
-Else
-    Set rangeToRefresh = Range(Cells(numRows, 1), Cells(numRows + rowsToRefresh - 1, 1))
-    visible = 0
-End If
-
 foundCounter = 0
+
+If ActiveSheet.FilterMode Then  'if autofilter used
+    visibleRowsToRefresh = rangeToRefresh.SpecialCells(xlCellTypeVisible).Cells.Count
+    visible = 1
+End If
 
 For Each cell In rangeToRefresh
     rowCounter = rowCounter + 1
@@ -176,7 +175,7 @@ For Each cell In rangeToRefresh
     If Not foundWhere Is Nothing Then 'if found
         foundCounter = foundCounter + 1
         LatestReport.Activate
-        Range(Cells(foundWhere.row, 1), Cells(foundWhere.row, 44)).Copy
+        Range(Cells(foundWhere.Row, 1), Cells(foundWhere.Row, 44)).Copy
         MissingRates.Activate
         cell.PasteSpecial Paste:=xlPasteValues
     End If
